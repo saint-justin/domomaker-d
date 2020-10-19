@@ -1,6 +1,6 @@
 const models = require('../models');
 
-const Account = models.Account;
+const { Account } = models;
 
 // ----------------------- GET request handling -----------------------
 const loginPage = (req, res) => {

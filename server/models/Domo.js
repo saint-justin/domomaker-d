@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const _ = require('underscore');
-// const { Domo } = require('../controllers');
+// const { Domo } = require('../controllers'); idk why this is here?
 
 mongoose.Promise = global.Promise;
 

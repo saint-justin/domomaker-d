@@ -9,6 +9,7 @@ const router = (app) => {
 
   app.post('/login', controllers.Account.login);
   app.post('/signup', controllers.Account.signup);
+  app.post('/maker', controllers.Domo.makeDomo);
 };
 
 module.exports = router;

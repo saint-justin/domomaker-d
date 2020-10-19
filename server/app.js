@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const handlebars = require('express-handlebars');
+const session = require('express-session');
 
 // Grab routes, port number, and database urls for later
 const router = require('./router.js');
@@ -39,6 +40,12 @@ app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);
 app.use(cookieParser());
+app.use(session({
+  key: 'sessionid',
+  secret: 'Domo Arigato',
+  resave: true,
+  saveUninitialized: true,
+}));
 
 // Pass our app to the router to map our routes
 router(app);

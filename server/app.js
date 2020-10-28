@@ -11,6 +11,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const url = require('url');
 const redis = require('redis');
+const csrf = require('csurf');
 
 // Grab routes, port number, and database urls for later
 const router = require('./router.js');
@@ -58,13 +59,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);
+app.disable('x-powered-by');
 app.use(cookieParser());
-// app.use(session({
-//   key: 'sessionid',
-//   secret: 'Domo Arigato',
-//   resave: true,
-//   saveUninitialized: true,
-// }));
+app.use(csrf());
+app.use((err, req, res, next) => {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
+  console.log('Missing CSRF token');
+  return false;
+})
 app.use(session({
   key: 'sessionid',
   store: new RedisStore({
@@ -77,6 +79,7 @@ app.use(session({
     httpOnly: true,
   },
 }));
+
 
 // Pass our app to the router to map our routes
 router(app);

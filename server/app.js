@@ -8,6 +8,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const handlebars = require('express-handlebars');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+const url = require('url');
+const redis = require('redis');
 
 // Grab routes, port number, and database urls for later
 const router = require('./router.js');
@@ -29,6 +32,22 @@ mongoose.connect(dbURL, mongooseOptions, (err) => {
   }
 });
 
+// Connect to redis
+let redisURL = {
+  hostname: 'redis-19788.c240.us-east-1-3.ec2.cloud.redislabs.com',
+  port: '19788',
+};
+let redisPASS = 'i7mcWRYCy0H45H7ekeAC4ZeRBn44i8FG';
+if (process.env.REDISCLOUD_URL) {
+  redisURL = url.parse(process.env.REDISCLOUD_URL);
+  [, redisPASS] = redisURL.auth.split(':');
+}
+const redisClient = redis.createClient({
+  host: redisURL.hostname,
+  port: redisURL.port,
+  password: redisPASS,
+});
+
 // Set up our application
 // Set up all our plugins with our app
 const app = express();
@@ -40,11 +59,23 @@ app.engine('handlebars', handlebars({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.set('views', `${__dirname}/../views`);
 app.use(cookieParser());
+// app.use(session({
+//   key: 'sessionid',
+//   secret: 'Domo Arigato',
+//   resave: true,
+//   saveUninitialized: true,
+// }));
 app.use(session({
   key: 'sessionid',
+  store: new RedisStore({
+    client: redisClient,
+  }),
   secret: 'Domo Arigato',
   resave: true,
   saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+  },
 }));
 
 // Pass our app to the router to map our routes

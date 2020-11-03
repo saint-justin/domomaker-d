@@ -80,7 +80,6 @@ app.use((err, req, res, next) => {
   return false;
 });
 
-
 // Pass our app to the router to map our routes
 router(app);
 

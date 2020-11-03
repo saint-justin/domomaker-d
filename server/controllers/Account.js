@@ -7,10 +7,6 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
-const signupPage = (req, res) => {
-  res.render('signup', { csrfToken: req.csrfToken() });
-};
-
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
@@ -29,6 +25,17 @@ const login = (req, res) => {
     return res.json({ redirect: '/maker' });
   });
 };
+
+// const getToken = (request, response) => {
+//   const req = request;
+//   const res = response;
+
+//   const csrfJSON = {
+//     csrfToken: req.csrfToken(),
+//   };
+
+//   res.json(csrfJSON);
+// };
 
 const signup = (req, res) => {
   req.body.username = `${req.body.username}`;
@@ -64,7 +71,6 @@ const signup = (req, res) => {
 
 module.exports = {
   loginPage,
-  signupPage,
   login,
   logout,
   signup,
